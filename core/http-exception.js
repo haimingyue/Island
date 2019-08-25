@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-08-18 05:47:06
- * @LastEditTime: 2019-08-25 15:25:44
+ * @LastEditTime: 2019-08-26 06:03:06
  * @LastEditors: Please set LastEditors
  */
 class HttpException extends Error {
@@ -48,10 +48,21 @@ class AuthFailed extends HttpException {
     this.errorCode = errorCode || 10004;
   }
 }
+
+class Forbbiden extends HttpException {
+  constructor(msg, errorCode) {
+    super();
+    this.code = 403;
+    this.msg = msg || '禁止访问';
+    this.errorCode = errorCode || 10006;
+  }
+
+}
 module.exports = {
   HttpException,
   ParameterException,
   Success,
   NotFound,
-  AuthFailed
+  AuthFailed,
+  Forbbiden
 }

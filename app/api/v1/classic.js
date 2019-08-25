@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-08-17 05:36:57
- * @LastEditTime: 2019-08-25 16:14:59
+ * @LastEditTime: 2019-08-26 06:41:30
  * @LastEditors: Please set LastEditors
  */
 const Router = require('koa-router');
@@ -13,15 +13,15 @@ const router = new Router({
 })
 
 const {Auth} = require('../../../middlewares/auth');
-var router = new Router;
 router.post('/latest',new Auth().m, async (ctx, next) => {
-  const path = ctx.params;
-  const query = ctx.request.query;
-  const header = ctx.request.header;
-  const body = ctx.request.body;
-  const v = await new PositiveIntegeValidator().validate(ctx);
-  const id = v.get('path.id');
-  ctx.body = {key: 'classic' };
+  // const path = ctx.params;
+  // const query = ctx.request.query;
+  // const header = ctx.request.header;
+  // const body = ctx.request.body;
+  // const v = await new PositiveIntegeValidator().validate(ctx);
+  // const id = v.get('path.id');
+  // ctx.body = {key: 'classic' };
+  ctx.body = ctx.auth.uid;
 })
 
 module.exports = router;

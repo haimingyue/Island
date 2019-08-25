@@ -2,21 +2,52 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-08-25 16:08:08
- * @LastEditTime: 2019-08-25 16:10:06
+ * @LastEditTime: 2019-08-26 06:40:13
  * @LastEditors: Please set LastEditors
  */
 
-const basicAuth = require('basic-token');
+const basicAuth = require('basic-auth');
+const {Forbbiden} = require('../core/http-exception');
+const jwt = require('jsonwebtoken');
 class Auth {
-  constructor () {
-    
+  constructor (level) {
+    // level用来代表api的权限级别
+    this.level = level || 1;
+    Auth.USER = 8;
+    Auth.ADMIN = 16;
+    Auth.Super = 32;
   }
 
   get m() {
     return async (ctx, next) => {
-      const token = basicAuth(ctx.req);
+      const userToken = basicAuth(ctx.req);
+      let msg = 'token不合法'
+      if(!userToken || !userToken.name) {
+        throw new Forbbiden(msg);
+      }
+      try {
+        var decode = jwt.verify(userToken.name, global.config.security.securetKey)
+      } catch (error) {
+        // token 不合法
+        // token 过期Error
+        if(error.name === 'TokenExpiredErrpr') {
+          msg = 'token 过期'
+        }
+        throw new Forbbiden(msg);
+      }
 
-      ctx.body = token;
+      if(decode.scope < this.level) {
+        msg = '权限不足';
+        throw new Forbbiden(msg);
+      }
+      // ctx.body = token;
+      // 保存uid。scope
+      ctx.auth = {
+        uid: decode.uid,
+        scope: decode.scope
+      }
+
+      await next();
     }
   }
 }
