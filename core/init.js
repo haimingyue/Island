@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-08-17 14:55:34
- * @LastEditTime: 2019-08-17 15:01:43
+ * @LastEditTime: 2019-08-23 05:26:30
  * @LastEditors: Please set LastEditors
  */
 
@@ -14,6 +14,12 @@ class InitManager {
   static initCore(app) {
     InitManager.app = app;
     InitManager.initLoadRouters();
+    InitManager.initConfig();
+  }
+  static initConfig(path='') {
+    const configPath = path || process.cwd() + '/config/config.js';
+    const config = require(configPath);
+    global.config = config;
   }
   static initLoadRouters() {
     const apiDirectory = `${process.cwd()}/app/api/v1`
