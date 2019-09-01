@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-08-25 16:08:08
- * @LastEditTime: 2019-08-26 06:40:13
+ * @LastEditTime: 2019-09-01 21:39:01
  * @LastEditors: Please set LastEditors
  */
 
@@ -49,6 +49,16 @@ class Auth {
 
       await next();
     }
+  }
+
+  static verifyToken(token) {
+    try {
+      jwt.verify(token, global.config.security.securetKey)
+      return true;
+    } catch (error) {
+      return false;
+    }
+    
   }
 }
 

@@ -2,16 +2,19 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-08-24 06:25:22
- * @LastEditTime: 2019-08-25 15:38:10
+ * @LastEditTime: 2019-09-01 21:41:56
  * @LastEditors: Please set LastEditors
  */
-const {TokenValidator} = require('../../validators/validator');
+const {TokenValidator,
+  NotEmptyValidator} = require('../../validators/validator');
 const Router = require('koa-router');
 const {LoginType} = require('../../lib/enum');
 const {User} = require('../../models/user');
 const {ParameterException} = require('../../../core/http-exception');
 const {generateToken} = require('../../../core/util');
-const router = new Router({
+const {WXManager} = require('../../services/wx');
+const {Auth} = require('../../../middlewares/auth')
+  const router = new Router({
   prefix: '/v1/token'
 })
 router.post('/', async (ctx) => {
@@ -22,7 +25,7 @@ router.post('/', async (ctx) => {
       token = await emailLogin(v.get('body.account'), v.get('body.secret'))
       break;
     case LoginType.USER_MINI_PROGRAM:
-
+      token = await WXManager.codeToToken(v.get('body.account'));
       break;
     
     default: 
@@ -31,6 +34,15 @@ router.post('/', async (ctx) => {
   }
   ctx.body = {
     token
+  }
+})
+
+router.post('/verify', async (ctx) => {
+  //
+  const v = await new NotEmptyValidator().validate(ctx);
+  const result = Auth.verifyToken(v.get('body.token'))
+  ctx.body = {
+    result
   }
 })
 

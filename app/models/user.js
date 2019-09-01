@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-08-21 15:46:23
- * @LastEditTime: 2019-08-25 14:57:26
+ * @LastEditTime: 2019-09-01 21:17:48
  * @LastEditors: Please set LastEditors
  */
 
@@ -11,6 +11,7 @@ const { sequelize } = require('../../core/db.js');
 const { NotFound, AuthFailed } = require('../../core/http-exception');
 
 const {Sequelize, Model} = require('sequelize');
+// const {WXManager} = require('../services/wx');
 
 class User extends Model {
   static async verifyEmailPassword(email, plainPassword) {
@@ -31,6 +32,21 @@ class User extends Model {
     }
     
     return user;
+  }
+
+  static async getUserbyOpenid(openid) {
+    const user = await User.findOne({
+      where: {
+        openid
+      }
+    })
+    return user;
+  }
+
+  static async registerUser(openid) {
+    const user = User.create({
+      openid
+    })
   }
 }
 

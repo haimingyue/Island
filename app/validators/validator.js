@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-08-19 21:42:11
- * @LastEditTime: 2019-08-25 06:49:32
+ * @LastEditTime: 2019-09-01 21:28:14
  * @LastEditors: Please set LastEditors
  */
 const { LinValidator, Rule } = require('../../core/lin-validator-v2');
@@ -83,8 +83,18 @@ class TokenValidator extends LinValidator {
   }
 }
 
+class NotEmptyValidator extends LinValidator {
+  constructor() {
+    super()
+    this.token = [
+      new Rule('isLength', '不允许为空', {min: 1})
+    ]
+  }
+}
+
 module.exports = {
   PositiveIntegeValidator,
   RegisterValidator,
-  TokenValidator
+  TokenValidator,
+  NotEmptyValidator
 }
