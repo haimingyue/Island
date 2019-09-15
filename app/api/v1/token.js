@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-08-24 06:25:22
- * @LastEditTime: 2019-09-01 21:41:56
+ * @LastEditTime: 2019-09-06 16:40:58
  * @LastEditors: Please set LastEditors
  */
 const {TokenValidator,
@@ -42,7 +42,7 @@ router.post('/verify', async (ctx) => {
   const v = await new NotEmptyValidator().validate(ctx);
   const result = Auth.verifyToken(v.get('body.token'))
   ctx.body = {
-    result
+    is_valide: result
   }
 })
 

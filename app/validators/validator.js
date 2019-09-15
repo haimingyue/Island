@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-08-19 21:42:11
- * @LastEditTime: 2019-09-01 21:28:14
+ * @LastEditTime: 2019-09-06 16:27:23
  * @LastEditors: Please set LastEditors
  */
 const { LinValidator, Rule } = require('../../core/lin-validator-v2');
@@ -83,6 +83,15 @@ class TokenValidator extends LinValidator {
   }
 }
 
+function checkType(vals) {
+  if(!vals.body.type) {
+    throw new Error('type 必须')
+  }
+  if (!LoginType.isThisType(vals.body.type)) {
+    throw new Error('type 参数不正确')
+  }
+}
+
 class NotEmptyValidator extends LinValidator {
   constructor() {
     super()
@@ -92,9 +101,17 @@ class NotEmptyValidator extends LinValidator {
   }
 }
 
+class LikeValidator extends PositiveIntegeValidator {
+  constructor() {
+    super()
+    this.validateType = checkType
+  }
+}
+
 module.exports = {
   PositiveIntegeValidator,
   RegisterValidator,
   TokenValidator,
-  NotEmptyValidator
+  NotEmptyValidator,
+  LikeValidator
 }

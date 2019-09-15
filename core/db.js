@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-08-21 14:22:24
- * @LastEditTime: 2019-08-25 07:08:40
+ * @LastEditTime: 2019-09-08 07:20:31
  * @LastEditors: Please set LastEditors
  */
 const Sequelize = require('sequelize');
@@ -27,7 +27,14 @@ const sequelize = new Sequelize(dbName,user,password, {
     createdAt:'created_at',
     updatedAt:'updated_at',
     deletedAt:'deleted_at',
-    underscored: true
+    underscored: true,
+    scopes: {
+      bh: {
+        attributes: {
+          exclude: ['updated_at', 'created_at', 'deleted_at']
+        }
+      }
+    }
   } 
 })
 

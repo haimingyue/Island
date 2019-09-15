@@ -2,9 +2,10 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-08-16 05:18:50
- * @LastEditTime: 2019-08-23 06:55:08
+ * @LastEditTime: 2019-09-07 06:25:23
  * @LastEditors: Please set LastEditors
  */
+require('module-alias/register');
 const Koa =require('koa');
 const bodyParser = require('koa-bodyparser');
 const catchError = require('./middlewares/exceptions.js');

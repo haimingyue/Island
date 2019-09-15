@@ -2,7 +2,7 @@
  * @Description: In User Settings Edit
  * @Author: your name
  * @Date: 2019-08-18 05:47:06
- * @LastEditTime: 2019-08-26 06:03:06
+ * @LastEditTime: 2019-09-06 16:13:53
  * @LastEditors: Please set LastEditors
  */
 class HttpException extends Error {
@@ -58,11 +58,31 @@ class Forbbiden extends HttpException {
   }
 
 }
+
+class LikeError extends HttpException {
+  constructor(msg, errorCode) {
+    super();
+    this.code = 403;
+    this.msg = msg || '你已经点赞过了';
+    this.errorCode = 60001;
+  }
+}
+
+class DisLikeError extends HttpException {
+  constructor(msg, errorCode) {
+    super();
+    this.code = 403;
+    this.msg = msg || '你已经取消点赞了';
+    this.errorCode = 60001;
+  }
+}
 module.exports = {
   HttpException,
   ParameterException,
   Success,
   NotFound,
   AuthFailed,
-  Forbbiden
+  Forbbiden,
+  LikeError,
+  DisLikeError
 }
