@@ -7,7 +7,7 @@
  */
 const { LinValidator, Rule } = require('../../core/lin-validator-v2');
 const { User } = require('../models/user');
-const { LoginType } = require('../lib/enum');
+const { LoginType, ArtType } = require('../lib/enum');
 
 console.log(LinValidator)
 console.log(Rule)
@@ -15,7 +15,7 @@ class PositiveIntegeValidator extends LinValidator {
   constructor() {
     super();
     this.id = [
-      new Rule('isInt', '必须是正整数', {min: 1})
+      new Rule('isInt', '必须是正整数', { min: 1 })
     ]
   }
 }
@@ -27,12 +27,12 @@ class RegisterValidator extends LinValidator {
       new Rule('isEmail', '不符合Email规范')
     ]
     this.password1 = [
-      new Rule('isLength', '6-32', {min: 6, max: 32}),
+      new Rule('isLength', '6-32', { min: 6, max: 32 }),
       new Rule('matches', '不符合规则', '^(?![0-9]+$)(?![a-zA-Z]+$)[0-9a-zA-Z]')
     ]
     this.password2 = this.password1
     this.nickname = [
-      new Rule('isLength', '昵称4-32', {min: 4, max: 32}),
+      new Rule('isLength', '昵称4-32', { min: 4, max: 32 }),
     ]
   }
 
@@ -52,7 +52,7 @@ class RegisterValidator extends LinValidator {
       }
     })
 
-    if(user) {
+    if (user) {
       throw new Error('email 已经存在')
     }
   }
@@ -60,21 +60,21 @@ class RegisterValidator extends LinValidator {
 
 
 class TokenValidator extends LinValidator {
-  
-  constructor () {
+
+  constructor() {
 
     super()
     this.account = [
-      new Rule('isLength', '不符合账号规则', {min: 4, max: 32})
+      new Rule('isLength', '不符合账号规则', { min: 4, max: 32 })
     ]
     this.secret = [
       new Rule('isOptional'),
-      new Rule('isLength', '不符合密码规则', {min: 6, max: 128})
+      new Rule('isLength', '不符合密码规则', { min: 6, max: 128 })
     ]
   }
 
   validateLoginType(vals) {
-    if(!vals.body.type) {
+    if (!vals.body.type) {
       throw new Error('type 必须')
     }
     if (!LoginType.isThisType(vals.body.type)) {
@@ -84,10 +84,23 @@ class TokenValidator extends LinValidator {
 }
 
 function checkType(vals) {
-  if(!vals.body.type) {
+  let type = vals.body.type || vals.path.type
+  if (!type) {
     throw new Error('type 必须')
   }
-  if (!LoginType.isThisType(vals.body.type)) {
+  type = parseInt(type)
+  if (!LoginType.isThisType(type)) {
+    throw new Error('type 参数不正确')
+  }
+}
+
+function checkArtType(vals) {
+  let type = vals.body.type || vals.path.type
+  if (!type) {
+    throw new Error('type 必须')
+  }
+  type = parseInt(type)
+  if (!ArtType.isThisType(type)) {
     throw new Error('type 参数不正确')
   }
 }
@@ -96,7 +109,7 @@ class NotEmptyValidator extends LinValidator {
   constructor() {
     super()
     this.token = [
-      new Rule('isLength', '不允许为空', {min: 1})
+      new Rule('isLength', '不允许为空', { min: 1 })
     ]
   }
 }
@@ -104,8 +117,12 @@ class NotEmptyValidator extends LinValidator {
 class LikeValidator extends PositiveIntegeValidator {
   constructor() {
     super()
-    this.validateType = checkType
+    this.validateType = checkArtType
   }
+}
+
+class ClassicValidator extends LikeValidator {
+
 }
 
 module.exports = {
@@ -113,5 +130,6 @@ module.exports = {
   RegisterValidator,
   TokenValidator,
   NotEmptyValidator,
-  LikeValidator
+  LikeValidator,
+  ClassicValidator
 }

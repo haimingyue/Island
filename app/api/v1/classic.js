@@ -6,16 +6,16 @@
  * @LastEditors: Please set LastEditors
  */
 const Router = require('koa-router');
-const {HttpException, ParameterException, NotFound} = require('../../../core/http-exception');
-const {PositiveIntegeValidator} = require('../../validators/validator.js');
-const {Flow} = require('@models/flow');
-const {Art} = require('../../models/art');
-const {Favor} = require('../../models/favor');
+const { HttpException, ParameterException, NotFound } = require('../../../core/http-exception');
+const { PositiveIntegeValidator, ClassicValidator } = require('../../validators/validator.js');
+const { Flow } = require('@models/flow');
+const { Art } = require('../../models/art');
+const { Favor } = require('../../models/favor');
 const router = new Router({
   prefix: '/v1/classic'
 })
 
-const {Auth} = require('../../../middlewares/auth');
+const { Auth } = require('../../../middlewares/auth');
 router.get('/latest', new Auth().m, async (ctx, next) => {
   // index = 8
   const flow = await Flow.findOne({
@@ -28,7 +28,7 @@ router.get('/latest', new Auth().m, async (ctx, next) => {
   })
   const art = await Art.getData(flow.art_id, flow.type);
   // const newData = {
-    
+
   // } 
   // art.dataValues.index = flow.index;
   const likeLatest = await Favor.userLikeIt(flow.art_id, flow.type, ctx.auth.uid);
@@ -50,7 +50,7 @@ router.get('/:index/next', new Auth().m, async (ctx, next) => {
     }
   })
 
-  if(!flow) {
+  if (!flow) {
     throw new NotFound()
   }
 
@@ -75,7 +75,7 @@ router.get('/:index/previous', new Auth().m, async (ctx, next) => {
     }
   })
 
-  if(!flow) {
+  if (!flow) {
     throw new NotFound()
   }
 
@@ -84,6 +84,28 @@ router.get('/:index/previous', new Auth().m, async (ctx, next) => {
   art.setDataValue('index', flow.index);
   art.setDataValue('like_status', likePrevious);
   ctx.body = art;
+})
+
+router.get('/:type/:id/favor', new Auth().m, async ctx => {
+  // const v = await new ClassicValidator().validate(ctx);
+  const v = await new ClassicValidator().validate(ctx)
+  const id = v.get('path.id');
+  const type = parseInt(v.get('path.type'));
+  const art = await Art.getData(id, type);
+  if (!art) {
+    throw new NotFound();
+  }
+  const like = await Favor.userLikeIt(id, type, ctx.auth.uid);
+
+  ctx.body = {
+    "fav_nums": art.fav_nums,
+    "like_status": like
+  }
+})
+
+router.get('/favor', new Auth().m, async ctx => {
+  const uid = ctx.auth.uid;
+
 })
 
 

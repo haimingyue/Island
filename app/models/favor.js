@@ -6,19 +6,21 @@
  * @LastEditTime: 2019-09-08 07:25:48
  * @LastEditors: Please set LastEditors
  */
-const {sequelize} = require('../../core/db');
+const { sequelize } = require('../../core/db');
 
 const {
   Sequelize,
-  Model 
+  Model,
+  Op
 } = require('sequelize')
 
 const {
   LikeError,
-  DisLikeError
+  DisLikeError,
+  NotFound
 } = require('../../core/http-exception');
 
-const {Art} = require('./art');
+const { Art } = require('./art');
 
 class Favor extends Model {
   // 业务表
@@ -35,18 +37,18 @@ class Favor extends Model {
         uid
       }
     })
-    if(favor) {
+    if (favor) {
       throw new LikeError();
     }
     return sequelize.transaction(async t => {
       await Favor.create({
-        art_id, 
+        art_id,
         type,
         uid
-      }, {transaction: t})
+      }, { transaction: t })
       //对用户的点赞字段 +1
       const art = await Art.getData(art_id, type, false);
-      await art.increment('fav_nums', {by: 1, transaction: t})
+      await art.increment('fav_nums', { by: 1, transaction: t })
     })
   }
   static async disLike(art_id, type, uid) {
@@ -57,7 +59,7 @@ class Favor extends Model {
         uid
       }
     })
-    if(!favor) {
+    if (!favor) {
       throw new DisLikeError();
     }
     return sequelize.transaction(async t => {
@@ -67,7 +69,7 @@ class Favor extends Model {
       })
       //对用户的点赞字段 +1
       const art = await Art.getData(art_id, type, false);
-      await art.decrement('fav_nums', {by: 1, transaction: t})
+      await art.decrement('fav_nums', { by: 1, transaction: t })
     })
   }
 
@@ -80,6 +82,25 @@ class Favor extends Model {
       }
     })
     return favor ? true : false;
+  }
+
+  static async getMyClassicFavors(uid) {
+    // type != 400
+    const arts = Favor.findAll({
+      where: {
+        uid,
+        type: {
+          [Op.not]: 400
+        }
+        // type: !=400
+      }
+    })
+    if (!arts) {
+      throw new NotFound()
+    }
+    // 防止循环查询数据库， 使用in查询
+
+
   }
 }
 
